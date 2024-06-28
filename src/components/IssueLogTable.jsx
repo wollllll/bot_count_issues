@@ -1,7 +1,12 @@
 import {Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
+import PropTypes from "prop-types";
 
-export const IssueCountLogTable = (props) => {
-    const { issueCountLogs } = props
+export const IssueLogTable = (props) => {
+    IssueLogTable.propTypes = {
+        children: PropTypes.node,
+        issueLogs: PropTypes.array
+    }
+    const { issueLogs } = props
 
     return (
         <Table aria-label="simple table" sx={{mt: 2}}>
@@ -23,10 +28,10 @@ export const IssueCountLogTable = (props) => {
                 </TableRow>
             </TableHead>
             <TableBody>
-                {issueCountLogs.map((issueCountLog, index) => (
+                {issueLogs.map((issueLog, index) => (
                     <TableRow key={index}>
-                        <TableCell component="th" scope="row">{issueCountLog.name}</TableCell>
-                        {issueCountLog.result.map((count, index) => (
+                        <TableCell component="th" scope="row">{issueLog.name}</TableCell>
+                        {issueLog.result.map((count, index) => (
                             <TableCell key={index}>{count}</TableCell>
                         ))}
                     </TableRow>
