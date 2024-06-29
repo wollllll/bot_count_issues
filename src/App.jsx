@@ -20,16 +20,18 @@ import {LineChart} from "@mui/x-charts";
 function App() {
     const url = new URL(window.location.href)
     const apiUrl = 'https://script.google.com/macros/s/AKfycbz7KSgknWXupLqaHMmldXtrdegvn5zaWJQoe93o1MdfbE6vhxqBZY33huJzcdcFsmg1/exec'
+    const today = new Date().toISOString().split('T')[0]
 
     const [tab, setTab] = useState(Number(url.searchParams.get('tab')))
     const [type, setType] = useState(null)
     const [issueLogs, setIssueLogs] = useState([])
     const [isLoading, setIsLoading] = useState(true)
+    const [isNoData, setIsNoData] = useState(false)
+    const [date, setDate] = useState(today)
+    const [dateFrom, setDateFrom] = useState(today)
+    const [dateTo, setDateTo] = useState(today)
 
     const [form, setForm] = useState({
-        date: '2024-06-17',
-        date_from: '2024-06-17',
-        date_to: '2024-06-17',
         item: 'assign_count',
         user_name: null,
         users: [],
@@ -65,17 +67,17 @@ function App() {
 
         switch (type) {
             case 1:
-                params.date = form.date
+                params.date = date
                 break
             case 2:
                 params.item = form.item
-                params.date_from = form.date_from
-                params.date_to = form.date_to
+                params.date_from = dateFrom
+                params.date_to = dateTo
                 break
             case 3:
                 params.user_name = form.user_name
-                params.date_from = form.date_from
-                params.date_to = form.date_to
+                params.date_from = dateFrom
+                params.date_to = dateTo
                 break
         }
 
@@ -83,6 +85,13 @@ function App() {
 
         setIssueLogs(response.data.issue_logs)
         setType(params.type)
+
+
+        if (response.data.issue_logs.length) {
+            setIsNoData(false)
+        } else {
+            setIsNoData(true)
+        }
     }
 
     return (
@@ -107,8 +116,8 @@ function App() {
                                         id="date"
                                         label="日付"
                                         type="date"
-                                        value={form.date}
-                                        onChange={(e) => setForm({...form, date: e.target.value})}
+                                        value={date}
+                                        onChange={(e) => setDate(e.target.value)}
                                     />
                                 </FormControl>
                             </Grid>
@@ -142,8 +151,8 @@ function App() {
                                         id="date_from"
                                         label="日付"
                                         type="date"
-                                        value={form.date_from}
-                                        onChange={(e) => setForm({...form, date_from: e.target.value})}
+                                        value={dateFrom}
+                                        onChange={(e) => setDateFrom(e.target.value)}
                                     />
                                 </FormControl>
                             </Grid>
@@ -153,8 +162,8 @@ function App() {
                                         id="date_to"
                                         label="日付"
                                         type="date"
-                                        value={form.date_to}
-                                        onChange={(e) => setForm({...form, date_to: e.target.value})}
+                                        value={dateTo}
+                                        onChange={(e) => setDateTo(e.target.value)}
                                     />
                                 </FormControl>
                             </Grid>
@@ -188,8 +197,8 @@ function App() {
                                         id="date_from"
                                         label="日付"
                                         type="date"
-                                        value={form.date_from}
-                                        onChange={(e) => setForm({...form, date_from: e.target.value})}
+                                        value={dateFrom}
+                                        onChange={(e) => setDateFrom(e.target.value)}
                                     />
                                 </FormControl>
                             </Grid>
@@ -199,8 +208,8 @@ function App() {
                                         id="date_to"
                                         label="日付"
                                         type="date"
-                                        value={form.date_to}
-                                        onChange={(e) => setForm({...form, date_to: e.target.value})}
+                                        value={dateTo}
+                                        onChange={(e) => setDateTo(e.target.value)}
                                     />
                                 </FormControl>
                             </Grid>
@@ -208,11 +217,11 @@ function App() {
                         <Button variant="contained" sx={{mt: 2}} onClick={() => showResult(3)}>表示</Button>
                     </TabPanel>
 
-                    {type === 1 && (
+                    {issueLogs.length > 0 && type === 1 && (
                         <IssueLogTable issueLogs={issueLogs}/>
                     )}
 
-                    {type === 2 && (
+                    {issueLogs.result && type === 2 && (
                         <LineChart
                             sx={{mt: 2}}
                             height={600}
@@ -221,13 +230,17 @@ function App() {
                         />
                     )}
 
-                    {type === 3 && (
+                    {issueLogs.result && type === 3 && (
                         <LineChart
                             sx={{mt: 2}}
                             height={600}
                             series={issueLogs.result}
                             xAxis={[{scaleType: 'point', data: issueLogs.dates}]}
                         />
+                    )}
+
+                    {isNoData && (
+                        <div>データが見つかりませんでした</div>
                     )}
                 </Container>
             )}
