@@ -26,10 +26,10 @@ function App() {
     const [type, setType] = useState(null)
     const [issueLogs, setIssueLogs] = useState([])
     const [isLoading, setIsLoading] = useState(true)
-    const [isNoData, setIsNoData] = useState(false)
     const [date, setDate] = useState(today)
     const [dateFrom, setDateFrom] = useState(today)
     const [dateTo, setDateTo] = useState(today)
+    const [isInit, setIsInit] = useState(true)
 
     const [form, setForm] = useState({
         item: 'assign_count',
@@ -85,13 +85,7 @@ function App() {
 
         setIssueLogs(response.data.issue_logs)
         setType(params.type)
-
-
-        if (response.data.issue_logs.length) {
-            setIsNoData(false)
-        } else {
-            setIsNoData(true)
-        }
+        setIsInit(false)
     }
 
     return (
@@ -239,7 +233,7 @@ function App() {
                         />
                     )}
 
-                    {isNoData && (
+                    {!isInit && issueLogs.length === 0  && (
                         <div>データが見つかりませんでした</div>
                     )}
                 </Container>
