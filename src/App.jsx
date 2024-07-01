@@ -17,18 +17,28 @@ import axios from "axios";
 import {IssueLogTable} from "./components/IssueLogTable.jsx";
 import {LineChart} from "@mui/x-charts";
 
+const getLastMonday = () => {
+    const date = new Date()
+    const daysToLastMonday = (date.getDay() + 6) % 7
+    date.setDate(date.getDate() - daysToLastMonday)
+
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+
+    return `${year}-${month}-${day}`
+}
+
 function App() {
     const url = new URL(window.location.href)
     const apiUrl = 'https://script.google.com/macros/s/AKfycbz7KSgknWXupLqaHMmldXtrdegvn5zaWJQoe93o1MdfbE6vhxqBZY33huJzcdcFsmg1/exec'
-    const today = new Date().toISOString().split('T')[0]
-
     const [tab, setTab] = useState(Number(url.searchParams.get('tab')))
     const [type, setType] = useState(null)
     const [issueLogs, setIssueLogs] = useState([])
     const [isLoading, setIsLoading] = useState(true)
-    const [date, setDate] = useState(today)
-    const [dateFrom, setDateFrom] = useState(today)
-    const [dateTo, setDateTo] = useState(today)
+    const [date, setDate] = useState(getLastMonday())
+    const [dateFrom, setDateFrom] = useState(getLastMonday())
+    const [dateTo, setDateTo] = useState(getLastMonday())
     const [isInit, setIsInit] = useState(true)
 
     const [form, setForm] = useState({
